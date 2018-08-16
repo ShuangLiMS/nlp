@@ -11,10 +11,10 @@ nltk.download('punkt')
 import matplotlib.pyplot as plt
 
 
-
 class TextToVec(object):
 
-    def __init__(self, tfidf=False, rate=(1, 1.0), binary=False, stop_words='english', analyzer='word', **kwargs):
+    def __init__(self, tfidf=False, min_rate=1, max_rate=1.0, binary=False, stop_words='english',
+                 ngram_range=(0,1), **kwargs):
         """
             Build vectorizer to convert list of tokens into count or tfidf vector
             :param tokenizer: specify tokenizer to use
@@ -26,19 +26,13 @@ class TextToVec(object):
             :return:
         """
         self.tfidf = tfidf
-        self.min_rate = rate[0]
-        self.max_rate = rate[1]
+        self.min_rate = min_rate
+        self.max_rate = max_rate
+        self.ngram_range = (0, ngram_range)
         self.binary = binary
         self.stop_words = stop_words
-        self.analyzer = analyzer
+        self.analyzer = 'word'
         self.vectorizer = self.build()
-
-
-    def tokenizer(self, text):
-
-        tokens = text.split(" ")
-
-        return tokens
 
 
     def build(self):
@@ -46,19 +40,19 @@ class TextToVec(object):
         if self.tfidf:
             return TfidfVectorizer(
                 analyzer=self.analyzer,
-                tokenizer=self.tokenizer,
                 stop_words=self.stop_words,
                 min_df=self.min_rate,
                 max_df=self.max_rate,
+                ngram_range=self.ngram_range,
                 binary=self.binary
             )
         else:
             return CountVectorizer(
                 analyzer=self.analyzer,
                 stop_words=self.stop_words,
-                tokenizer=self.tokenizer,
                 min_df=self.min_rate,
                 max_df=self.max_rate,
+                ngram_range=self.ngram_range,
                 binary=self.binary
             )
 
@@ -68,4 +62,5 @@ class TextToVec(object):
 
     def transform(self, data):
         return np.array(self.vectorizer.transform(data).todense())
+
 

@@ -1,6 +1,7 @@
 import jamspell
 from nltk.tokenize import casual_tokenize
 from nltk.stem.porter import PorterStemmer
+from nltk.stem import WordNetLemmatizer
 import pandas as pd
 import regex as re
 from preprocessing import rm_punctuation
@@ -25,8 +26,10 @@ def spell_tokenizer(text):
             else:
                 tokens.append(word)
 
-    stemmer = PorterStemmer()
-    stems = [stemmer.stem(item) for item in tokens]
+    wordnet_lemmatizer = WordNetLemmatizer()
+    stems = [wordnet_lemmatizer.lemmatize(item) for item in tokens]
+    # stemmer = PorterStemmer()
+    # stems = [stemmer.stem(item) for item in tokens]
 
     return stems
 
@@ -40,8 +43,11 @@ def casual_tokenizer(text):
     """
     tokens = [word for word in casual_tokenize(rm_punctuation(text), preserve_case=False, reduce_len=True, strip_handles=True)]
 
-    stemmer = PorterStemmer()    # Mild stemmer comparing to other type
-    stems = [stemmer.stem(item) for item in tokens]
+    wordnet_lemmatizer = WordNetLemmatizer()
+    stems = [wordnet_lemmatizer.lemmatize(item) for item in tokens]
+
+    # stemmer = PorterStemmer()    # Mild stemmer comparing to other type
+    # stems = [stemmer.stem(item) for item in tokens]
 
     return stems
 
@@ -83,12 +89,12 @@ if __name__ == "__main__":
     casual_train_data = main(train_df, type='casual', dataset='train')
     casual_dev_data = main(dev_df, type='casual', dataset='dev')
 
-    casual_train_data.to_csv(search_path+'/casual_train.csv')
-    casual_dev_data.to_csv(search_path+'/casual_dev.csv')
+    casual_train_data.to_csv(search_path+'/casual_train_lemma.csv')
+    casual_dev_data.to_csv(search_path+'/casual_dev_lemma.csv')
 
     # Process the data and save using spell tokenizer
     spell_train_data = main(train_df, type='spell', dataset='train')
     spell_dev_data = main(dev_df, type='spell', dataset='dev')
 
-    spell_train_data.to_csv(search_path + '/spell_train.csv')
-    spell_dev_data.to_csv(search_path + '/spell_dev.csv')
+    spell_train_data.to_csv(search_path + '/spell_train_lemma.csv')
+    spell_dev_data.to_csv(search_path + '/spell_dev_lemma.csv')
